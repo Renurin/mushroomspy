@@ -15,25 +15,22 @@ for i in range(Ntrain):
     Xtrain.append(row)
 
 # Step 3: Convert the characters in numbers
+enconder = LabelEncoder()
+enconded_Xtrain = np.array(Xtrain)
 
-flat_Xtrain= np.array(Xtrain).flatten() # Label Encoder expects a fuckin 1D array???
-encoder = LabelEncoder() 
-encoded_flat_Xtrain= encoder.fit_transform(flat_Xtrain)
-enconded_Xtrain= encoded_flat_Xtrain.reshape(len(Xtrain), -1)
-
-print("Enconded matrix:")
-print(enconded_Xtrain)
-
-"""
-print("\nMapping of labels to encoded values:")
-for original, encoded in zip(encoder.classes_, range(len(encoder.classes_))):
-    print(f"{original}: {encoded}")
-"""
-
-    # Not sure if this will work =) 
+for column_index in range(22):
+    enconded_Xtrain[:,column_index] = enconder.fit_transform(enconded_Xtrain[:,column_index])
+    
+print(enconded_Xtrain) # I think this actually worked =)
 
 # Step 4: Normalize values (vector μ)(vector σ) USE THE FORMULA IN ELD PRINT!!!
 
+# Standard deviation for EACH mushroom (loop)
+standard_deviation= []
+for i in range(Ntrain):
+    print()
+# standard_deviation= math.sqrt((1/Ntrain)*(sum(1,Ntrain)*?))  Bruv this formula is dogshit LOL
+                              
 # Step 5: For each attribute, substract from the mean (all attributes, 1 row) and divide by the standard deviantion, if a value does not vary in the array (standard deviation = 0),
 # Set its value to 0. 
 
