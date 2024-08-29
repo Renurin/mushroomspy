@@ -109,3 +109,4 @@ for testing in enconded_Xtest:
     else: print('e')
 
 # I mean, it IS running, just dunno if its right
+# Okay I pull up !!!
