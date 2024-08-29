@@ -3,13 +3,12 @@ from sklearn.preprocessing import LabelEncoder
 import numpy as np
 
 # Step 1: Read the values K, Ntrain, Ntest
-knneighbors= int(input("K: "))
-Ntrain, Ntest = map(int,input("Ntrain and Ntest: \n").split())
+knneighbors= int(input())
+Ntrain, Ntest = map(int,input().split())
 
 # Step 2: Read Xtrain, a matrix of Ntrain rows(mushrooms) columns(attributes)
 
 Xtrain = []
-print("Enter Xtrain rows one by one:")
 for i in range(Ntrain):
     row = list(map(str, input().split())) # Apply the str type to each input
     Xtrain.append(row)
@@ -25,8 +24,6 @@ for column_index in range(22):
 enconded_Xtrain = enconded_Xtrain.astype(float) # Typecast cause DUMB numpy =)
 means = np.mean(enconded_Xtrain, axis=0) # Array of all means of the attributes
 
-print(enconded_Xtrain) # I think this actually worked =)
-print(means)
 
 # Step 4: Normalize values (vector μ)(vector σ) USE THE FORMULA IN ELD PRINT!!!
 
@@ -62,7 +59,6 @@ labels = np.array(Ytrain)
 
 # Step 7: Read Xtest, a matrix of Ntest rows(mushrooms) columns(attributes)
 Xtest = []
-print("Enter Xtest rows one by one:")
 for i in range(Ntest):
     row = list(map(str, input().split())) # Apply the str type to each input
     Xtest.append(row)
