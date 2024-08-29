@@ -62,11 +62,13 @@ for i in range(Ntrain):
             enconded_Xtrain[i,j]= (enconded_Xtrain[i,j] - means[j]) / standard_deviation[j]
 
 # Step 6: Label Ytrain, an array of Ntrain elements, row(p or e) and D columns
-Ytrain = []
+Ytrain = [['p'],['e']]
+"""
 for i in range(Ntrain):
     row = map(str,input())
     Ytrain.append(row)
- 
+"""
+labels= np.array(Ytrain)
 # Step 7: Read Xtest, a matrix of Ntest rows(mushrooms) columns(attributes)
 Xtest = [
 ['f', 'f', 'g', 'f', 'f', 'f', 'c', 'b', 'p', 'e', 'b', 'k', 'k', 'n', 'b', 'p', 'w', 'o', 'l', 'h', 'v', 'd'],
@@ -79,8 +81,10 @@ for i in range(Ntest):
     row = list(map(str, input().split())) # Apply the str type to each input
     Xtest.append(row)
 """
+
 # Step 8: Convert the characters in numbers (Ytrain)
-enconded_Xtest= np.array(Ntest)
+enconded_Xtest= np.array(Xtest)
+
 for column_index in range(22):
     enconded_Xtest[:,column_index] = enconder.fit_transform(enconded_Xtest[:,column_index])
 
@@ -95,3 +99,30 @@ for i in range(Ntest):
             enconded_Xtest[i,j]= (enconded_Xtest[i,j] - means[j]) / standard_deviation[j]
 
 # Step 10: For each Xtesti: calculate the Euclidean Distance between xtesti and Xtrain's vectors. USE THE FORMULA IN ELD PRINT!!!
+def euclidian_distance(array1, array2):
+    return np.sqrt(np.sum(np.array(array1)-np.array(array2) ** 2)) # Will use later
+
+
+# Step 11: Verify between K neirest-neighbors next to xtesti, if the majority of them is p or e
+
+poison_count = 0
+editable_count = 0 # Inicializing variables
+
+for testing in enconded_Xtest:
+    distances = []
+    for training in enconded_Xtrain:
+        distance = euclidian_distance(testing, training)
+        distances.append(distance) # Setting array with the distances
+
+    k_indices= np.argsort(distances)[:knneighbors] # Sorting array =)
+
+    k_labels = labels[k_indices]
+
+    # Test if the majority are p or e
+    poison_count= np.sum(k_labels=='p')
+    editable_count= np.sum(k_labels=='e')
+
+    # Printing labels
+    if poison_count > editable_count:
+        print('p')
+    else: print('e')

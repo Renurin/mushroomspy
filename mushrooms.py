@@ -58,7 +58,8 @@ Ytrain = []
 for i in range(Ntrain):
     row = map(str,input())
     Ytrain.append(row)
- 
+labels = np.array(Ytrain)
+
 # Step 7: Read Xtest, a matrix of Ntest rows(mushrooms) columns(attributes)
 Xtest = []
 print("Enter Xtest rows one by one:")
@@ -67,7 +68,7 @@ for i in range(Ntest):
     Xtest.append(row)
 
 # Step 8: Convert the characters in numbers (Ytrain)
-enconded_Xtest= np.array(Ntest)
+enconded_Xtest= np.array(Xtest)
 for column_index in range(22):
     enconded_Xtest[:,column_index] = enconder.fit_transform(enconded_Xtest[:,column_index])
 
@@ -83,6 +84,32 @@ for i in range(Ntest):
 
 # Step 10: For each Xtesti: calculate the Euclidean Distance between xtesti and Xtrain's vectors. USE THE FORMULA IN ELD PRINT!!!
 
-# Step 11: Verify between K neirest-neighbors next to xtesti, if the majority of them is p or e
+def euclidian_distance(array1, array2):
+    return np.sqrt(np.sum(np.array(array1)-np.array(array2) ** 2)) # Will use later
 
-# Step 12: Print the label of the majority obtained on the last step ('p' or 'e')
+# Step 11: Verify between K neirest-neighbors next to xtesti, if the majority of them is p or e
+# Okay this will be insane
+
+poison_count = 0
+editable_count = 0 # Inicializing variables
+
+for testing in enconded_Xtest:
+    distances = []
+    for training in enconded_Xtrain:
+        distance = euclidian_distance(testing, training)
+        distances.append(distance) # Setting array with the distances
+
+    k_indices= np.argsort(distances)[:knneighbors] # Sorting array =)
+
+    k_labels = labels[k_indices] # Stupid error only int scalar bruh
+
+    # Test if the majority are p or e
+    poison_count= np.sum(k_labels=='p')
+    editable_count= np.sum(k_labels=='e')
+
+    # Step 12: Print the label of the majority obtained on the last step ('p' or 'e')
+    if poison_count > editable_count:
+        print('p')
+    else: print('e')
+
+# I mean, it IS running, just dunno if its right

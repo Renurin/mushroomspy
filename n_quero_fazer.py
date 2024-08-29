@@ -1,4 +1,5 @@
 import pyautogui
+import numpy as np
 # Make a code to input in the other code =)
 # =)
 
@@ -99,3 +100,61 @@ p
 p
 e
 """
+# Sample training and test data
+training_data = np.array([
+    [1, 2],  # Example label: 2 (even)
+    [2, 3],  # Example label: 3 (odd)
+    [3, 4],  # Example label: 4 (even)
+    [5, 5]   # Example label: 5 (odd)
+])
+
+# Assume the labels are in the last column of the training_data
+labels = training_data[:, -1]
+
+test_data = np.array([
+    [1, 1],
+    [2, 2]
+])
+
+def euclidean_distance(a, b):
+    return np.sqrt(np.sum((a - b) ** 2))
+
+# Function to find K nearest neighbors and check majority even or odd
+def find_k_nearest_neighbors_and_check(training_data, test_data, k):
+    nearest_neighbors = []
+    even_odd_majority = []
+
+    for test_point in test_data:
+        distances = []
+
+        # Compute distances from test_point to all training points
+        for train_point in training_data:
+            distance = euclidean_distance(test_point, train_point)
+            distances.append(distance)
+
+        # Get the indices of the K smallest distances
+        k_indices = np.argsort(distances)[:k]
+        nearest_neighbors.append(k_indices)
+
+        # Extract the labels of the K nearest neighbors
+        k_labels = labels[k_indices]
+
+        # Determine if the majority of the labels are even or odd
+        even_count = np.sum(k_labels % 2 == 0)
+        odd_count = k - even_count
+
+        if even_count > odd_count:
+            even_odd_majority.append("even")
+        else:
+            even_odd_majority.append("odd")
+
+    return nearest_neighbors, even_odd_majority
+
+# Set the value of K
+k = 2
+
+# Find K nearest neighbors and check for majority even or odd
+k_nearest_neighbors, even_odd_majority = find_k_nearest_neighbors_and_check(training_data, test_data, k)
+
+print("K nearest neighbors indices:", k_nearest_neighbors)
+print("Majority of K nearest neighbors:", even_odd_majority)
