@@ -1,5 +1,4 @@
 import math
-from sklearn.preprocessing import LabelEncoder
 import numpy as np
 
 # Step 1: Read the values K, Ntrain, Ntest
@@ -15,8 +14,29 @@ for i in range(Ntrain):
 
 # Step 3: Convert the characters in numbers & Step 4: Normalize values (vector μ)(vector σ)
 
-enconder = LabelEncoder()
-enconded_Xtrain = np.array(Xtrain)
+class CustomLabelEncoder:
+    def __init__(self):
+        self.label_to_index = {}
+        self.index_to_label = {}
+        self.is_fitted = False
+
+    def fit(self, labels):
+        labels = np.array(labels)
+        unique_labels = np.unique(labels)
+        self.label_to_index = {label: idx for idx, label in enumerate(unique_labels)}
+        self.index_to_label = {idx: label for idx, label in enumerate(unique_labels)}
+        self.is_fitted = True
+        return self
+
+    def transform(self, labels):
+        if not self.is_fitted:
+            raise ValueError("LabelEncoder not fitted yet.")
+        labels = np.array(labels)
+        return np.array([self.label_to_index[label] for label in labels])
+
+enconder = CustomLabelEncoder()
+enconder.fit(Xtrain)
+enconded_Xtrain= np.array(Xtrain)
 
 for column_index in range(22):
     enconded_Xtrain[:,column_index] = enconder.fit_transform(enconded_Xtrain[:,column_index])
@@ -64,9 +84,13 @@ for i in range(Ntest):
     Xtest.append(row)
 
 # Step 8: Convert the characters in numbers (Ytrain)
+enconder.fit(Xtest)
 enconded_Xtest= np.array(Xtest)
+
 for column_index in range(22):
-    enconded_Xtest[:,column_index] = enconder.fit_transform(enconded_Xtest[:,column_index])
+    enconded_Xtest[:,column_index] = enconder.transform(enconded_Xtest[:,column_index])
+
+enconded_Xtest = enconded_Xtest.astype(float) # Typecast cause DUMB numpy =)
 
 enconded_Xtest = enconded_Xtest.astype(float) # Typecast cause DUMB numpy =)
 
