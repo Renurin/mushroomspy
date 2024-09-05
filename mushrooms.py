@@ -117,12 +117,13 @@ for testing in enconded_Xtest:
         distances.append(distance) # Setting array with the distances
 
     k_indices= np.argsort(distances)[:knneighbors] # Sorting array =)
-
     k_labels = labels[k_indices] # Stupid error only int scalar bruh
 
-    # Test if the majority are p or e
-    poison_count= np.sum(k_labels== 'p')
-    editable_count= np.sum(k_labels== 'e')
+    for i in range(knneighbors):
+        if k_labels[i] == 'p':
+            poison_count += 1
+        else: editable_count +=1
+     # Test if the majority are p or e
 
     # Step 12: Print the label of the majority obtained on the last step ('p' or 'e')
     if poison_count > editable_count:

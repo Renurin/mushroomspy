@@ -90,6 +90,7 @@ for i in range(Ntrain):
     row = map(str,input())
     Ytrain.append(row)
 """
+print(Ytrain)
 labels= np.array(Ytrain)
 # Step 7: Read Xtest, a matrix of Ntest rows(mushrooms) columns(attributes)
 Xtest = [
@@ -138,12 +139,15 @@ for testing in enconded_Xtest:
         distances.append(distance) # Setting array with the distances
 
     k_indices= np.argsort(distances)[:knneighbors] # Sorting array =)
-
+    print(k_indices)
     k_labels = labels[k_indices]
-
+    print(k_labels)
     # Test if the majority are p or e
-    poison_count= np.sum(k_labels=='p')
-    editable_count= np.sum(k_labels=='e')
+    for i in range (knneighbors):
+        print(k_labels[i])
+        if k_labels[i] == 'p':
+            poison_count += 1
+        else: editable_count += 1
 
     # Printing labels
     if poison_count > editable_count:
