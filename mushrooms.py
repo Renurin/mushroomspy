@@ -39,7 +39,7 @@ enconder.fit(Xtrain)
 enconded_Xtrain= np.array(Xtrain)
 
 for column_index in range(22):
-    enconded_Xtrain[:,column_index] = enconder.fit_transform(enconded_Xtrain[:,column_index])
+    enconded_Xtrain[:,column_index] = enconder.transform(enconded_Xtrain[:,column_index])
 
 enconded_Xtrain = enconded_Xtrain.astype(float) # Typecast cause DUMB numpy =)
 means = np.mean(enconded_Xtrain, axis=0) # Array of all means of the attributes
@@ -89,9 +89,6 @@ enconded_Xtest= np.array(Xtest)
 
 for column_index in range(22):
     enconded_Xtest[:,column_index] = enconder.transform(enconded_Xtest[:,column_index])
-
-enconded_Xtest = enconded_Xtest.astype(float) # Typecast cause DUMB numpy =)
-
 enconded_Xtest = enconded_Xtest.astype(float) # Typecast cause DUMB numpy =)
 
 # Step 9: Utilize the same vectors from Xtrain (vector μ)(vector σ) and normalize it
@@ -105,7 +102,7 @@ for i in range(Ntest):
 # Step 10: For each Xtesti: calculate the Euclidean Distance between xtesti and Xtrain's vectors. USE THE FORMULA IN ELD PRINT!!!
 
 def euclidian_distance(array1, array2):
-    return np.sqrt(np.sum(np.array(array1)-np.array(array2) ** 2)) # Will use later
+    return np.sqrt(np.sum((np.array(array1) - np.array(array2)) ** 2)) # Will use later
 
 # Step 11: Verify between K neirest-neighbors next to xtesti, if the majority of them is p or e
 # Okay this will be insane
@@ -124,8 +121,8 @@ for testing in enconded_Xtest:
     k_labels = labels[k_indices] # Stupid error only int scalar bruh
 
     # Test if the majority are p or e
-    poison_count= np.sum(k_labels=='p')
-    editable_count= np.sum(k_labels=='e')
+    poison_count= np.sum(k_labels== 'p')
+    editable_count= np.sum(k_labels== 'e')
 
     # Step 12: Print the label of the majority obtained on the last step ('p' or 'e')
     if poison_count > editable_count:
