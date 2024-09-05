@@ -1,19 +1,13 @@
-import math
 import numpy as np
 
 # Step 1: Read the values K, Ntrain, Ntest
-knneighbors= int(input())
-Ntrain, Ntest = map(int,input().split())
+knneighbors = int(input())
+Ntrain, Ntest = map(int, input().split())
 
-# Step 2: Read Xtrain, a matrix of Ntrain rows(mushrooms) columns(attributes)
-
-Xtrain = []
-for i in range(Ntrain):
-    row = list(map(str, input().split())) # Apply the str type to each input
-    Xtrain.append(row)
+# Step 2: Read Xtrain
+Xtrain = [list(input().split()) for _ in range(Ntrain)]
 
 # Step 3: Convert the characters in numbers & Step 4: Normalize values (vector μ)(vector σ)
-
 class CustomLabelEncoder:
     def __init__(self):
         self.label_to_index = {}
@@ -31,104 +25,66 @@ class CustomLabelEncoder:
     def transform(self, labels):
         if not self.is_fitted:
             raise ValueError("LabelEncoder not fitted yet.")
-        labels = np.array(labels)
         return np.array([self.label_to_index[label] for label in labels])
 
-enconder = CustomLabelEncoder()
-enconder.fit(Xtrain)
-enconded_Xtrain= np.array(Xtrain)
+encoder = CustomLabelEncoder()
+all_labels = [item for sublist in Xtrain for item in sublist]
+encoder.fit(all_labels)
 
-for column_index in range(22):
-    enconded_Xtrain[:,column_index] = enconder.transform(enconded_Xtrain[:,column_index])
+encoded_Xtrain = np.array([encoder.transform(row) for row in Xtrain],dtype=float)
 
-enconded_Xtrain = enconded_Xtrain.astype(float) # Typecast cause DUMB numpy =)
-means = np.mean(enconded_Xtrain, axis=0) # Array of all means of the attributes
+# Calculate standard deviations & means
+means = np.array([sum(data)/len(data) for data in zip(*encoded_Xtrain)])
 
+def calculate_deviation(data,mean):
+    return np.sqrt((sum((x - mean)**2 for x in data)/len(data)))
+std_devs=np.array([calculate_deviation(column, mean) for column, mean in zip(zip(*encoded_Xtrain), means)])
 
-# Step 4: Normalize values (vector μ)(vector σ) USE THE FORMULA IN ELD PRINT!!!
-
-# Standard deviation for EACH mushroom (loop)
-standard_deviation= np.zeros(22) # Inicialize empty array
-
-# 22 standard deviation, 1 for each attribute
-def calc_sum(attributes, mean):
-    return np.sum((np.array(attributes)-mean) ** 2) # Check this too
-
-for j in range(22):
-    total_sum= sum(calc_sum(enconded_Xtrain[row_index], means[j]) for row_index in range(Ntrain))
-    standard_deviation[j] = math.sqrt((1/Ntrain)*(total_sum))
-
-# standard_deviation= math.sqrt((1/Ntrain)*(sum(1,Ntrain)*(attribute-mean)^2))  Bruv this formula is dogshit LOL
-                              
-# Step 5: For each attribute, substract from the mean (all attributes, 1 row) and divide by the standard deviantion, if a value does not vary in the array (standard deviation = 0),
-# Set its value to 0. If some error occurs later, check this thing out =)
-
-for i in range(Ntrain):
-    for j in range(22):
-        if standard_deviation[j] == 0:
-            enconded_Xtrain[i,j] = 0
+# Step 4 & 5: Normalize Xtrain
+normalized_Xtrain = []
+for row in encoded_Xtrain:
+    normalized_row= []
+    for i, data in enumerate (row):
+        if std_devs[i] == 0:
+            normalized_value = 0
         else:
-            enconded_Xtrain[i,j]= (enconded_Xtrain[i,j] - means[j]) / standard_deviation[j]
-        
-# Step 6: Label Ytrain, an array of Ntrain elements, row(p or e) and D columns
-Ytrain = []
-for i in range(Ntrain):
-    row = map(str,input())
-    Ytrain.append(row)
-labels = np.array(Ytrain)
+            normalized_value = (data - means[i]) / std_devs[i]
+        normalized_row.append(normalized_value)
+    normalized_Xtrain.append(normalized_row)
 
-# Step 7: Read Xtest, a matrix of Ntest rows(mushrooms) columns(attributes)
-Xtest = []
-for i in range(Ntest):
-    row = list(map(str, input().split())) # Apply the str type to each input
-    Xtest.append(row)
+# Step 6: Read Ytrain
+Ytrain = [input().strip() for _ in range(Ntrain)]
 
-# Step 8: Convert the characters in numbers (Ytrain)
-enconder.fit(Xtest)
-enconded_Xtest= np.array(Xtest)
+# Step 7: Read Xtest
+Xtest = [list(input().split()) for _ in range(Ntest)]
 
-for column_index in range(22):
-    enconded_Xtest[:,column_index] = enconder.transform(enconded_Xtest[:,column_index])
-enconded_Xtest = enconded_Xtest.astype(float) # Typecast cause DUMB numpy =)
+# Step 8: Encode Xtest
+encoded_Xtest = np.array([[encoder.transform([val])[0] for val in row] for row in Xtest])
 
-# Step 9: Utilize the same vectors from Xtrain (vector μ)(vector σ) and normalize it
-for i in range(Ntest):
-    for j in range(22):
-        if standard_deviation[j] == 0:
-            enconded_Xtest[i,j] = 0
+# Step 9: Normalize Xtest
+normalized_Xtest= []
+for row in encoded_Xtest:
+    normalized_row= []
+    for i, data in enumerate (row):
+        if std_devs[i] == 0:
+            normalized_value = 0
         else:
-            enconded_Xtest[i,j]= (enconded_Xtest[i,j] - means[j]) / standard_deviation[j]
+            normalized_value = (data - means[i]) / std_devs[i]
+        normalized_row.append(normalized_value)
+    normalized_Xtest.append(normalized_row)
+    
 
-# Step 10: For each Xtesti: calculate the Euclidean Distance between xtesti and Xtrain's vectors. USE THE FORMULA IN ELD PRINT!!!
+# Step 10: Define Euclidean distance
+def euclidean_distance(test, train):
+    return sum((array1 - array2) ** 2 for array1,array2 in zip(test,train)) ** 0.5
 
-def euclidian_distance(array1, array2):
-    return np.sqrt(np.sum((np.array(array1) - np.array(array2)) ** 2)) # Will use later
+# Step 11: Predict for each test sample
+for test_sample in normalized_Xtest:
 
-# Step 11: Verify between K neirest-neighbors next to xtesti, if the majority of them is p or e
-# Okay this will be insane
+    distances = [euclidean_distance(test_sample, train_sample) for train_sample in normalized_Xtrain]
+    k_indices = np.argsort(distances)[:knneighbors]  # Get indices of k smallest distances
+    k_labels = [Ytrain[aux] for aux in k_indices] # Get the labels in Ytrain
 
-poison_count = 0
-editable_count = 0 # Inicializing variables
-
-for testing in enconded_Xtest:
-    distances = []
-    for training in enconded_Xtrain:
-        distance = euclidian_distance(testing, training)
-        distances.append(distance) # Setting array with the distances
-
-    k_indices= np.argsort(distances)[:knneighbors] # Sorting array =)
-    k_labels = labels[k_indices] # Stupid error only int scalar bruh
-
-    for i in range(knneighbors):
-        if k_labels[i] == 'p':
-            poison_count += 1
-        else: editable_count +=1
-     # Test if the majority are p or e
-
-    # Step 12: Print the label of the majority obtained on the last step ('p' or 'e')
-    if poison_count > editable_count:
-        print('p')
-    else: print('e')
-
-# I mean, it IS running, just dunno if its right
-# Okay I pull up !!!
+    prediction_label = max(set(k_labels), key=k_labels.count)
+    # Step 12: Print labels
+    print(prediction_label)
