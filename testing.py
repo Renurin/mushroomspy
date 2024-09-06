@@ -9,7 +9,7 @@ time.sleep(2)
 pyautogui.PAUSE = 0.3
 
 pyautogui.click(x=886, y=1048)
-pyautogui.write('& C:/Users/Renan/AppData/Local/Programs/Python/Python312/python.exe "c:/Users/Renan/Desktop/Pasta_do_Renan_=)/Python/trampoEld/IA.py"')
+pyautogui.write('path')
 pyautogui.press('enter')
 # print(pyautogui.position())
 time.sleep(2)
