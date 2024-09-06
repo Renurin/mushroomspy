@@ -15,16 +15,12 @@ class CustomLabelEncoder:
         self.is_fitted = False
 
     def fit(self, labels):
-        labels = np.array(labels)
-        unique_labels = np.unique(labels)
+        unique_labels = sorted(set(labels))
         self.label_to_index = {label: idx for idx, label in enumerate(unique_labels)}
         self.index_to_label = {idx: label for idx, label in enumerate(unique_labels)}
-        self.is_fitted = True
         return self
 
     def transform(self, labels):
-        if not self.is_fitted:
-            raise ValueError("LabelEncoder not fitted yet.")
         return np.array([self.label_to_index[label] for label in labels])
 
 encoder = CustomLabelEncoder()
